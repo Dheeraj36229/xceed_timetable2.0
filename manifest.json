@@ -1,0 +1,15 @@
+{
+  "name": "Timetable Bot",
+  "short_name": "Timetable",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2693/2693507.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
