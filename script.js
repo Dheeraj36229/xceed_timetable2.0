@@ -181,6 +181,7 @@ const timetableData = {
         ]
     }
 };
+
 const sessionSelect = document.getElementById('session');
 const deptSelect = document.getElementById('department');
 const dynamicSelect = document.getElementById('dynamicOption');
@@ -241,20 +242,29 @@ sendPdfBtn.onclick = async function() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Server error");
+        if (!response.ok) throw new Error("Server failed to generate PDF");
 
+        // 1. Convert the server response into a file blob
         const blob = await response.blob();
+        
+        // 2. Create a hidden link in the browser memory
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
+        
+        // 3. Set the filename and trigger the click
         a.download = `Timetable_${payload.instagram}.pdf`;
         document.body.appendChild(a);
         a.click();
+        
+        // 4. Cleanup
+        window.URL.revokeObjectURL(url);
         a.remove();
-        statusMsg.textContent = "Success! PDF Downloaded.";
+
+        statusMsg.textContent = "Download Started!";
         statusMsg.style.color = "#38a169";
     } catch (err) {
-        statusMsg.textContent = "Error: Bot failed to generate PDF.";
+        statusMsg.textContent = "Error: " + err.message;
         statusMsg.style.color = "#e53e3e";
     } finally {
         this.disabled = false;

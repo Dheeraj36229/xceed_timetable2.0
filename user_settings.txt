@@ -3,15 +3,12 @@
         "session": "2025-2026 (Even)",
         "department": "Basic Sciences",
         "section": "B.Tech-BT+MCE-SectionA5",
-        "subscription": {
-            "endpoint": "https://fcm.googleapis.com/fcm/send/d6h_-C8RvrY:APA91bF7Ni7LJvcF4fbbw3aMS1VMj2NraRVWuleu8hzmKMm7LTvVIR6x3G7sNE0CuXT7RRNzKW-Ck7iBVFKrDWHvwGOpp1I_v9rzdakHfgGd_-n0tM9CcJS0na-jV839RSNBU7YiAmse",
-            "expirationTime": null,
-            "keys": {
-                "p256dh": "BEziz5jm0Xa8pu4Uo73iIE7NSbBn_X14w9P4jfmN-uA5BdlHF1t5UU7k4mXcTT5yPMvlpD6se7Iij-2XwLSBhY0",
-                "auth": "hKFM9HTf9sGaDc--rvILuQ"
-            }
-        },
-        "reminder_status": "yes",
+        "status": "completed"
+    },
+    "dheeraj": {
+        "session": "2025-2026 (Even)",
+        "department": "Basic Sciences",
+        "section": "B.Tech-ME_SectionB4",
         "status": "completed"
     }
 }

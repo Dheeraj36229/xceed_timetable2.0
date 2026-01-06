@@ -27,18 +27,6 @@ def save_data(data):
     with open(FILE_NAME, "w") as f:
         json.dump(data, f, indent=4)
 
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
-import os
-import json
-# Import your scraper function
-from processtimetable import process_timetables
-
-app = Flask(__name__)
-CORS(app)
-
-FILE_NAME = "user_settings.txt"
-
 @app.route('/process-all', methods=['POST'])
 def process_all():
     new_data = request.json
@@ -91,6 +79,7 @@ def process_all():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+thread_lock = threading.Lock()
 reminder_started = False
 @app.route('/set-reminder', methods=['POST'])
 def set_reminder():
@@ -118,17 +107,18 @@ def set_reminder():
     save_data(data_dict)
 
     # Start the background reminder thread if not already running
-    boot_system()
-   
-    return jsonify({"status": "success", "message": "Reminder set!"})
+    start_background_worker()
 
-def boot_system():
+    return jsonify({"status": "success", "message": "Browser reminders active!"})
+
+def start_background_worker():
     global reminder_started
-    if not reminder_started:
-        t = threading.Thread(target=reminderstart, daemon=True)
-        t.start()
-        reminder_started=True
-        print("Server Booted. Background services initializing...")
+    with thread_lock:
+        if not reminder_started:
+            thread = threading.Thread(target=reminderstart, daemon=True)
+            thread.start()
+            reminder_started = True
+            print("Background reminder worker initialized.")
 from flask import send_from_directory
 
 @app.route('/manifest.json')
@@ -138,40 +128,14 @@ def serve_manifest():
 @app.route('/sw.js')
 def serve_sw():
     return send_from_directory(os.getcwd(), 'sw.js')
-from flask import send_from_directory
 
 @app.route('/static/<path:path>')
-def serve_static(path):
-    # This serves your logos, icons, and banners to the browser
+def send_static(path):
     return send_from_directory('static', path)
-@app.route('/test-push/<username>')
-def test_push(username):
-    if not os.path.exists(FILE_NAME):
-        return "No users found"
 
-    with open(FILE_NAME, "r") as f:
-        data = json.load(f)
-
-    if username in data and "subscription" in data[username]:
-        settings = data[username]
-        # This calls your existing push function from botworker.py
-        from botworker import send_web_push 
-        
-        test_message = {
-            "title": "🚀 XCEED | Test Alert",
-            "body": "Your branding is working! Next class: Demo Lab"
-        }
-        
-        success = send_web_push(settings["subscription"], json.dumps(test_message))
-        return f"Push sent! Status: {success}"
-    
-    return "User or subscription not found. Make sure you clicked 'Set Reminder' first."
-
-# Automatic boot trigger
 
 if __name__ == '__main__':
-    # Update with your actual Render URL
-    boot_system()
-
-    start_keep_alive("https://your-timetable-bot.onrender.com") 
-    app.run(port=5000, debug=True)
+    # Start the worker once at the entry point
+    start_background_worker()
+    start_keep_alive("https://your-timetable-bot.onrender.com")
+    app.run(port=5000, debug=False)

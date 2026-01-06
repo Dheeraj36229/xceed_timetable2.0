@@ -58,7 +58,7 @@ def reminderstart():
 
         for idx, slot in enumerate(class_slots):
             # [cite_start]Trigger 5 minutes before the class starts [cite: 1]
-            if now.hour == slot[0] and now.minute == (slot[1] - 29):
+            if now.hour == slot[0] and now.minute == (slot[1] - 5):
                 
                 if not os.path.exists(FILE_NAME):
                     continue
